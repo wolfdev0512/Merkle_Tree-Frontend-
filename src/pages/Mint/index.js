@@ -29,7 +29,6 @@ const Dashboard = () => {
   const [temp, setTemp] = useState("");
   const [root, setRoot] = useState();
   const [addresses, setAddresses] = useState([]);
-  const [proof, setProof] = useState();
   const [price, setPrice] = useState(0);
   const [owner, setOwner] = useState("");
   const { provider, currentAcc, web3 } = useEthContext();
@@ -67,39 +66,43 @@ const Dashboard = () => {
 
   const addList = () => {
     if (owner === currentAcc.toLocaleLowerCase()) {
-      axios.get(`https://salty-inlet-19598.herokuapp.com/add/${temp}`).then(async (res) => {
-        const root = await res.data.root;
-        if (root === "Address already exists") {
-          alert("Address already exists");
-        } else {
-          await setRoot(root.toLowerCase());
-          await setAddresses(res.data.addresses);
-          const contract = new web3.eth.Contract(
-            contract_abi,
-            contract_address
-          );
+      axios
+        .get(`https://salty-inlet-19598.herokuapp.com/add/${temp}`)
+        .then(async (res) => {
+          const root = await res.data.root;
+          if (root === "Address already exists") {
+            alert("Address already exists");
+          } else {
+            await setRoot(root.toLowerCase());
+            await setAddresses(res.data.addresses);
+            const contract = new web3.eth.Contract(
+              contract_abi,
+              contract_address
+            );
 
-          await contract.methods
-            .setMerkleRoot("0x" + root)
-            .send({ from: currentAcc.toUpperCase() }, (err, res) => {
-              if (err) {
-                console.log("An error occured", err);
-                return;
-              }
-              console.log("Hash of the transaction: " + res);
-            });
-        }
-      });
+            await contract.methods
+              .setMerkleRoot("0x" + root)
+              .send({ from: currentAcc.toUpperCase() }, (err, res) => {
+                if (err) {
+                  console.log("An error occured", err);
+                  return;
+                }
+                console.log("Hash of the transaction: " + res);
+              });
+          }
+        });
     } else {
       alert("Only owner can add");
     }
   };
 
-  const getProof = () => {
-    axios.get(`https://salty-inlet-19598.herokuapp.com/get/${currentAcc}`).then((res) => {
-      console.log(res.data.proof);
-      setProof(res.data.proof);
-    });
+  const getProof = async () => {
+    return await axios
+      .get(`https://salty-inlet-19598.herokuapp.com/get/${currentAcc}`)
+      .then((res) => {
+        console.log(res.data.proof);
+        return res.data.proof;
+      });
   };
 
   const handleConnectWallet = async () => {
@@ -113,8 +116,9 @@ const Dashboard = () => {
   };
 
   const mint = async () => {
-    await getProof();
+    let proof = await getProof();
     const contract = new web3.eth.Contract(contract_abi, contract_address);
+    console.log("sdfwef");
     contract.methods.whitelistMint(1, proof).send(
       {
         from: currentAcc,
