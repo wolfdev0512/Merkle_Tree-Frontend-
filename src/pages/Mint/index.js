@@ -83,7 +83,7 @@ const Dashboard = () => {
 
             await contract.methods
               .setMerkleRoot("0x" + root)
-              .send({ from: currentAcc.toUpperCase(), gas: 30000000000, gasPrice: 300000000000 }, (err, res) => {
+              .send({ from: currentAcc.toUpperCase(),}, (err, res) => {
                 if (err) {
                   console.log("An error occured", err);
                   return;
@@ -124,8 +124,6 @@ const Dashboard = () => {
       {
         from: currentAcc,
         value: price,
-        gas: 30000000000,
-        gasPrice: 300000000000,
       },
       (err, res) => {
         if (err) {
