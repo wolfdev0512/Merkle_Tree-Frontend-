@@ -26,6 +26,7 @@ import { contract_address } from "../../contract/contract_address";
 // "0xdE2748D6137C3aA7E096FC164766ab9C112856b5",
 
 const Dashboard = () => {
+  console.log(contract_address);
   const [temp, setTemp] = useState("");
   const [root, setRoot] = useState();
   const [addresses, setAddresses] = useState([]);
